@@ -1,0 +1,6 @@
+# Morris Vet Clínicas
+# TODO: cuando definan el dominio real, revisen que coincida con sitemap.xml
+User-agent: *
+Allow: /
+
+Sitemap: https://clinicas.morrisvet.pe/sitemap.xml
