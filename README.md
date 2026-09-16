@@ -1,88 +1,111 @@
-# Morris Vet Clínicas — landing B2B
+# Morris Vet — Sitio B2C (raíz de morrisvet.pe)
 
-Código de producción de la landing "Morris Vet — Atención Veterinaria para Clínicas", a partir del diseño UI aprobado en Claude Design y la Guía Visual de Marca.
+Landing de **atención veterinaria a domicilio** para dueños de mascotas.
+Corresponde al diseño que hiciste en Claude Design ("Landing Mascotas") y
+va en la **raíz** de morrisvet.pe. El sitio para clínicas (referidos
+quirúrgicos) vive aparte, en `morrisvet.pe/clinicas`.
 
-## Estructura del proyecto
+Metodología: la misma que en el sitio de clínicas — ITCSS (capas, de lo
+general a lo específico) + BEM para nombrar clases. Sin frameworks ni
+dependencias externas, solo HTML/CSS/JS y Google Fonts (Fredoka + Jost).
+
+## Cómo integrarlo a tu repositorio
+
+Tu repositorio de GitHub Pages debe quedar así:
 
 ```
-morris-vet-clinicas-site/
-├── index.html              # Toda la página (HTML semántico + SEO)
-├── css/
-│   └── styles.css          # Una sola hoja de estilos, organizada por capas
-├── js/
-│   └── main.js             # Menú móvil, formulario, año dinámico
-├── img/                    # Logos, foto e íconos (ver detalle abajo)
-├── assets/                 # Aquí va el tarifario-morrisvet.pdf (ver TODO)
-├── reference/               # Código guardado para reinstalar más adelante (ver abajo)
+tu-repo/
+├── index.html          ← este sitio (reemplaza el placeholder que ya subiste)
+├── css/styles.css
+├── js/main.js
+├── img/
 ├── favicon.ico
 ├── robots.txt
-└── sitemap.xml
+├── sitemap.xml
+├── CNAME               ← ya contiene "morrisvet.pe"
+└── clinicas/            ← el sitio B2B que ya tienes, sin cambios
+    ├── index.html
+    ├── css/, js/, img/, assets/
+    └── ...
 ```
 
-No hay build ni dependencias: son archivos estáticos. Para verlo en local basta abrir `index.html` en el navegador, o levantar un servidor simple (`npx serve` o la extensión Live Server de VS Code) para que las rutas relativas y las fuentes de Google carguen igual que en producción.
+Es decir: copia el contenido de esta carpeta directo a la raíz de tu
+repositorio (reemplazando `index.html`, `css/`, `js/`, `img/`, `favicon.ico`,
+`robots.txt`, `sitemap.xml` y `CNAME` que dejó el placeholder), y deja la
+carpeta `clinicas/` tal como está. No hace falta tocar nada de DNS ni de la
+configuración de Pages otra vez — ya quedó lista con el dominio personalizado.
 
-## Metodología de código
+**Nota sobre `robots.txt` y `sitemap.xml`:** ahora sí viven en la raíz real
+del dominio, así que ya tienen efecto para buscadores (a diferencia del que
+quedó dentro de `clinicas/`, que es solo informativo). El `sitemap.xml` de
+aquí ya incluye las dos páginas (`morrisvet.pe/` y `morrisvet.pe/clinicas/`),
+así que puedes ignorar el de `clinicas/sitemap.xml` o borrarlo.
 
-- **HTML**: semántico (`header`, `main`, `section`, `footer`, jerarquía de encabezados h1→h4), con `aria-label`/`aria-labelledby` en cada sección y `alt` en todas las imágenes con significado (las puramente decorativas llevan `alt=""` + `aria-hidden`).
-- **CSS**: metodología **ITCSS + BEM**.
-  - *ITCSS* ordena el archivo de lo más general a lo más específico: tokens → reset → tipografía → objetos de layout reutilizables (`.o-*`) → componentes → utilidades (`.u-*`). Así evitas que una regla tardía "gane" por casualidad de orden en vez de por especificidad real.
-  - *BEM* nombra cada componente como `bloque__elemento--modificador` (por ejemplo `.specialties__card--yellow`). Cada bloque es una sección de la página (`.hero`, `.faq`, `.contact`, etc.), así que si mañana agregas o quitas una sección, tocas un bloque y no rompes otro.
-  - Toda la paleta y la tipografía están en variables CSS (`:root` al inicio de `styles.css`), con los nombres tal como aparecen en la Guía Visual de Marca (`--mv-verde-oscuro`, `--mv-amarillo`, etc.) más alias semánticos de uso (`--color-primary`, `--color-accent`...). Si la marca cambia un color, se edita en un solo lugar.
-- **JavaScript**: vanilla, sin frameworks ni dependencias, en un único archivo con tres responsabilidades bien separadas (ver comentarios en `main.js`).
+## Formulario "Agendar visita" → HubSpot
 
-## Nota sobre tipografía
+Igual que en el sitio de clínicas, el formulario envía los datos directo a
+HubSpot (Forms API), sin backend propio. Para activarlo:
 
-La guía de marca pide **Pie Piper** (logo) y **Century Gothic** (títulos/textos). Ninguna de las dos es una fuente web gratuita, así que el diseño en Claude Design ya las reemplazó por sus alternativas más cercanas y de licencia libre:
+1. En HubSpot: Marketing → Formularios → crea un formulario nuevo, por
+   ejemplo "Agendar visita a domicilio (web)".
+2. Copia su **Form GUID** y pégalo en `js/main.js`, reemplazando
+   `HUBSPOT_FORM_GUID = "PENDIENTE_CREAR_FORMULARIO_B2C"` por el valor real.
+   El Portal ID es el mismo que ya usas (`52008444`).
+3. Propiedades de contacto que usa este formulario — la mayoría **ya
+   existen** porque las creaste para el formulario de clínicas:
+   - `firstname` — estándar de HubSpot (nombre del dueño).
+   - `phone` — estándar de HubSpot (WhatsApp).
+   - `distrito` — ya existe, se reutiliza tal cual.
+   - `paciente` — ya existe, se reutiliza tal cual (aquí guarda "mascota,
+     nombre y edad" en vez de datos del paciente quirúrgico, pero el campo
+     sirve igual).
+   - `resumen_caso` — ya existe, se reutiliza tal cual.
+   - `tipo_servicio_domicilio` — **es la única propiedad nueva** que debes
+     crear (tipo texto de una línea o desplegable), para no mezclar los
+     servicios de "atención a domicilio" con los `tipo_procedimiento` del
+     formulario de clínicas.
 
-- **Fredoka** en vez de Pie Piper → mismo espíritu redondeado y amigable para títulos.
-- **Jost** en vez de Century Gothic → geometría muy similar (círculos y trazos monolineales) para el texto de cuerpo.
+Mientras el GUID no esté configurado, el formulario igual muestra la
+pantalla de "¡Gracias!" al enviarse (para no bloquear al usuario), pero el
+dato no llega a HubSpot — revisa la consola del navegador si quieres
+confirmarlo.
 
-Ambas se cargan desde Google Fonts en el `<head>` de `index.html`. Si más adelante consiguen las fuentes originales con licencia, solo hay que reemplazar el `<link>` de Google Fonts por tus propios `@font-face` y actualizar `--font-display` / `--font-body` en `styles.css`.
+## Fotos — qué son de verdad y qué falta reemplazar
 
-## Imágenes incluidas
+Las 5 fotos que subiste ya están incorporadas y optimizadas para web
+(`img/hero-consulta-en-casa.jpg` y las 4 de `img/galeria-*.jpg`). Dos cosas
+a tener en cuenta antes de publicar:
 
-| Archivo | Uso en la página |
-|---|---|
-| `img/morris-vet-isotipo-mark.png` | Isotipo (M + gato), recortado sin el relleno transparente del original — navbar, footer y pantalla de "caso recibido" |
-| `img/morris-vet-logo-mark.png` | Logotipo "Morris Vet", recortado igual que el isotipo — footer |
-| `img/morris-vet-isotipo.png`, `img/morris-vet-logo.png` | Archivos originales sin recortar (se conservan solo como respaldo; no se usan en la página) |
-| `img/morris-vet-sello.png` | Sello decorativo sobre la foto del hero |
-| `img/morris-vet-cirujano-clinica.webp` | Foto principal del hero |
-| `img/og-cover.jpg` | Imagen de vista previa al compartir el link (WhatsApp, Facebook, Twitter/X) — la generé combinando la foto del hero con el logo, en el tamaño estándar 1200×630 |
-| `favicon.ico`, `img/favicon-32.png`, `img/apple-touch-icon.png`, `img/icon-192.png`, `img/icon-512.png` | Set de favicons generado a partir del isotipo |
+- Las 5 son fotos de banco (no son de tu equipo ni de pacientes reales) —
+  igual que se señaló en el sitio de clínicas, conviene reemplazarlas por
+  fotos reales de tus visitas apenas las tengas. Están puestas para que el
+  sitio no se vea vacío mientras tanto.
+- **`img/galeria-gato-sofa.jpg`** (la foto del gato en el sofá) muestra un
+  bolso con la marca **"Vet2Go"** visible, que no es tu marca. La dejé
+  puesta porque era la que mejor calzaba temáticamente con "gato atendido
+  en su sofá", pero te recomiendo cambiarla antes de publicar para no mostrar
+  el maletín de otro servicio veterinario en tu propia web — basta con
+  reemplazar ese archivo por otra foto del mismo tamaño (768×405 o similar).
 
-## Conexión con HubSpot (gestión de leads)
+Los testimonios de la sección "Lo que dicen las familias" también son de
+ejemplo (ya lo dice el aviso debajo de esa sección) — reemplázalos por
+reseñas reales antes de publicar.
 
-El formulario de contacto ya no valida nada más: al enviarlo, `js/main.js` manda los campos directo a la API de formularios de HubSpot (plan gratis, sin backend propio ni servicios intermedios). Para activarlo:
+## Enlace entre ambos sitios
 
-1. **Crea una cuenta de HubSpot** (plan gratis) si todavía no tienes una, y agrega como usuario al cirujano/equipo médico que también deba ver los casos (el plan gratis permite 2 usuarios).
-2. **Crea las propiedades de contacto personalizadas** en HubSpot (Configuración → Propiedades → Propiedades de contacto → Crear propiedad), una por cada campo que no sea estándar, con exactamente estos nombres internos:
-   - `medico_responsable` (texto de una línea)
-   - `distrito` (texto de una línea, o desplegable con los 11 distritos de la web)
-   - `tipo_procedimiento` (texto de una línea, o desplegable con las mismas opciones del formulario)
-   - `paciente` (texto de una línea)
-   - `prioridad_caso` (texto de una línea, o desplegable: Programada / Esta semana / Urgente (24 h))
-   - `resumen_caso` (texto multilínea)
+Agregué un enlace real en el footer ("Morris Vet también ofrece servicio
+quirúrgico para clínicas veterinarias. Conoce más aquí.") que lleva a
+`/clinicas/`, para que quien entre a la web de mascotas pueda llegar a la
+de clínicas y viceversa. Si quieres, podemos agregar el enlace inverso
+también en el footer de `clinicas/index.html`.
 
-   Los demás campos (clínica, WhatsApp, correo) usan las propiedades estándar de HubSpot `company`, `phone` y `email` — no hay que crear nada para esos tres.
-3. **Crea un formulario en HubSpot** (Marketing → Formularios → Crear formulario) con esos mismos campos — no lo vas a insertar en la página (seguimos usando el formulario propio, ya diseñado), es solo para que HubSpot tenga dónde registrar los envíos. En la configuración del formulario, **desmarca "correo" como obligatorio** (en nuestra página es opcional) y revisa que no tenga activado ningún requisito de consentimiento legal (GDPR) que no aplique a Perú.
-4. **Copia el Portal ID y el GUID del formulario** y pégalos en `js/main.js`, al inicio de la sección 2 (`HUBSPOT_PORTAL_ID` y `HUBSPOT_FORM_GUID`). El Portal ID está en Configuración → Cuenta y facturación; el GUID del formulario se copia desde su código de inserción o la URL del editor.
-5. **Arma el pipeline**: en HubSpot, ve a Ventas → Negociaciones y crea un pipeline "Casos quirúrgicos" con las etapas Nuevo caso → Cotizado → Agendado → Realizado. Cada envío del formulario crea o actualiza un **contacto**; para llevar el seguimiento, conviertan ese contacto en una negociación (un clic desde su ficha) y muévanla por el pipeline.
+## Verificación hecha antes de entregar
 
-**Sobre los archivos adjuntos (exámenes, radiografías, fotos):** a propósito no viajan a HubSpot. Su API de formularios solo acepta texto — el campo "archivo" de HubSpot en realidad guarda una URL, no el archivo, y esa subida solo la hace el script propio de su formulario embebido (no está disponible para un envío hecho por fuera, como el nuestro). Por eso el formulario ahora invita a mandar esos archivos por WhatsApp justo después de enviar el caso — es además el canal más rápido para algo urgente. Si en algún momento quieren centralizar también los archivos en HubSpot, se puede armar una función serverless (por ejemplo en Cloudflare Workers, con plan gratis) que reciba el archivo, lo suba con la API de archivos de HubSpot usando una "app privada", y recién ahí complete el envío — es una pieza más de infraestructura, así que vale la pena solo si el volumen de casos lo justifica.
-
-El campo de "Adjuntar archivos" que tenía el formulario (con el mismo diseño ya aprobado: ícono, botón "Subir archivo" y lista de chips) se guardó completo en `reference/campo-adjuntar-archivos.md`, listo para reinstalar cuando conecten un servicio de archivos (por ejemplo Getform/Forminit gratis, o Web3Forms Pro si quieren adjuntos reales por correo).
-
-## Configuración SEO incluida
-
-- **Metadatos**: `title` y `meta description` con las palabras clave del negocio (cirugía veterinaria, clínicas, Lima), `canonical`, `robots`.
-- **Open Graph + Twitter Card**: para que el link se vea bien al compartirlo por WhatsApp/redes, usando `img/og-cover.jpg`.
-- **Datos estructurados (JSON-LD)**: tipo `VeterinaryCare` de schema.org, con teléfono, correo, distritos de cobertura (`areaServed`) y redes (`sameAs`). Esto ayuda a que Google entienda de qué trata el negocio.
-- **`robots.txt`** y **`sitemap.xml`**: listos para que cualquier buscador rastree el sitio.
-- **Rendimiento**: `preconnect` a Google Fonts, la foto del hero con `fetchpriority="high"` (es lo primero que ve el usuario) y las imágenes del footer con `loading="lazy"` (cargan solo si el usuario llega hasta abajo); `width`/`height` en las imágenes para que la página no "salte" mientras carga.
-
-## Pendientes antes de publicar (TODO)
-
-1. **Dominio real**: reemplaza `https://clinicas.morrisvet.pe/` por el dominio definitivo en `index.html` (canonical, Open Graph, JSON-LD), `robots.txt` y `sitemap.xml`. Usé ese como referencia porque el B2C ya usa `www.morrisvet.pe` según la guía de marca.
-2. **Pipeline de HubSpot**: `HUBSPOT_PORTAL_ID` y `HUBSPOT_FORM_GUID` en `js/main.js` ya tienen los valores reales de la cuenta de Morris Vet, así que cada envío del formulario ya llega a HubSpot como contacto. Solo falta el paso 5 de "Conexión con HubSpot" arriba: armar el pipeline "Casos quirúrgicos" (Ventas → Negociaciones) para llevar el seguimiento de cada caso.
-3. **Equipo médico**: el diseño no incluye todavía nombres/fotos del cirujano o cirujanos a cargo — cuando los definan, es una sección nueva fácil de sumar siguiendo el mismo patrón de `.team__item`.
+- Formulario: confirmé con una prueba automatizada que el formulario se
+  oculta y aparece "¡Gracias!" correctamente al enviarse (y viceversa con
+  "Enviar otra solicitud") — antes de esa prueba había un bug de CSS que lo
+  dejaba mostrando ambos al mismo tiempo; ya está corregido.
+- Menú móvil: probado en 390px de ancho, el botón "Agendar visita" del menú
+  desplegable se pone verde oscuro al pasar el mouse (igual que en el sitio
+  de clínicas).
+- Sin errores de consola del navegador en la página.

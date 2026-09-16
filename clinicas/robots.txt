@@ -1,0 +1,12 @@
+# Morris Vet Clínicas (sitio B2B, publicado en morrisvet.pe/clinicas)
+#
+# IMPORTANTE: este archivo solo tiene efecto si vive en la RAÍZ del dominio
+# (https://morrisvet.pe/robots.txt) — un robots.txt dentro de /clinicas/ no lo
+# lee ningún buscador. Como morrisvet.pe lo sirve el repo del sitio B2C, hay
+# que fusionar estas líneas con el robots.txt real de ese repo (o crear uno en
+# la raíz si todavía no existe) en vez de subir este archivo tal cual dentro
+# de /clinicas.
+User-agent: *
+Allow: /
+
+Sitemap: https://morrisvet.pe/clinicas/sitemap.xml
