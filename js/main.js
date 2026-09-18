@@ -60,6 +60,7 @@
   var HUBSPOT_FIELD_MAP = {
     nombre: "firstname",
     whatsapp: "phone",
+    correo: "email",
     mascota: "paciente",
     distrito: "distrito",
     servicio: "tipo_servicio_domicilio",
@@ -73,6 +74,24 @@
         return value ? { name: HUBSPOT_FIELD_MAP[name], value: value } : null;
       })
       .filter(Boolean);
+
+    // El campo "Correo" del formulario es opcional (para no obligar a
+    // completar un dato que a veces no tienen a mano), pero HubSpot
+    // necesita un "email" sí o sí para poder crear o identificar el
+    // contacto — sin él, el envío completo se descarta en silencio. Si no
+    // lo llenaron, se arma uno de respaldo con los dígitos del WhatsApp.
+    var tieneCorreo = fields.some(function (f) { return f.name === "email"; });
+    if (!tieneCorreo) {
+      var whatsappDigits = (formData.get("whatsapp") || "")
+        .toString()
+        .replace(/\D/g, "");
+      if (whatsappDigits) {
+        fields.push({
+          name: "email",
+          value: whatsappDigits + "@sincorreo.morrisvet.pe"
+        });
+      }
+    }
 
     // Para poder separar en HubSpot los contactos de domicilio de los de
     // clínicas (mismo portal, un solo listado de Contactos), cada sitio

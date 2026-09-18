@@ -55,20 +55,67 @@ HubSpot (Forms API), sin backend propio. Para activarlo:
    existen** porque las creaste para el formulario de clínicas:
    - `firstname` — estándar de HubSpot (nombre del dueño).
    - `phone` — estándar de HubSpot (WhatsApp).
+   - `email` — estándar de HubSpot. El formulario tiene un campo "Correo
+     (opcional)" — si la persona lo llena, se manda tal cual. Si lo deja
+     vacío, HubSpot igual necesita un correo para crear/identificar el
+     contacto (sin él, el envío entero se descarta en silencio), así que el
+     código arma automáticamente uno de respaldo con los dígitos del
+     WhatsApp (por ejemplo `51914962401@sincorreo.morrisvet.pe`). No hay que
+     crear ninguna propiedad nueva para esto (`email` ya existe), pero sí
+     hay que agregarla como campo oculto al formulario — ver el paso 4.
    - `distrito` — ya existe, se reutiliza tal cual.
    - `paciente` — ya existe, se reutiliza tal cual (aquí guarda "mascota,
      nombre y edad" en vez de datos del paciente quirúrgico, pero el campo
      sirve igual).
    - `resumen_caso` — ya existe, se reutiliza tal cual.
-   - `tipo_servicio_domicilio` — **es la única propiedad nueva** que debes
-     crear (tipo texto de una línea o desplegable), para no mezclar los
-     servicios de "atención a domicilio" con los `tipo_procedimiento` del
-     formulario de clínicas.
+   - `tipo_servicio_domicilio` — es la única propiedad nueva de este
+     formulario en particular (tipo texto de una línea o desplegable), para
+     no mezclar los servicios de "atención a domicilio" con los
+     `tipo_procedimiento` del formulario de clínicas.
+   - `linea_negocio` — **nueva, y también hay que crearla en el sitio de
+     clínicas** (texto de una línea o desplegable con las opciones
+     "Domicilio" y "Clínicas"). Sirve para poder filtrar en la lista de
+     Contactos y ver por separado los casos de domicilio y los de clínicas,
+     ya que ambos formularios comparten el mismo portal de HubSpot. Cada
+     sitio manda su propio valor fijo automáticamente (no es un campo que
+     llene el usuario).
+   - `hs_lead_status` (Estado del lead) — propiedad de HubSpot, ya no hay
+     que crearla. Este formulario también manda automáticamente el valor
+     "Nuevo" en cada envío, igual que el de clínicas.
+
+4. **Importante — agrega los campos al formulario, no solo a las
+   propiedades:** además de crear las propiedades de contacto arriba, entra
+   a editar el formulario que creaste en el paso 1 y agrégale como campos
+   (pueden quedar **ocultos**, ya que este formulario no se muestra en la
+   web) `email`, `linea_negocio` y `Estado del lead`. La API de envíos de
+   HubSpot descarta cualquier propiedad que el código mande pero que no esté
+   dada de alta en el formulario — esto costó bastante depurar en el
+   formulario de clínicas, así que no te saltes este paso. Si el formulario
+   de "Agendar visita a domicilio" no tiene el campo `email` agregado, es
+   justo el motivo por el que los envíos no estaban llegando.
+5. Después de agregar los campos, dale clic a **"Revisar y actualizar"**
+   para publicar el formulario — mientras diga "Guardado con cambios sin
+   publicar", los envíos reales siguen usando la versión anterior.
 
 Mientras el GUID no esté configurado, el formulario igual muestra la
 pantalla de "¡Gracias!" al enviarse (para no bloquear al usuario), pero el
 dato no llega a HubSpot — revisa la consola del navegador si quieres
 confirmarlo.
+
+## Ver domicilio y clínicas por separado en HubSpot
+
+Como los dos formularios comparten el mismo portal, todos los contactos
+caen en el mismo listado de Contactos. Para verlos separados:
+
+1. Ve a Contactos → en la parte de arriba, junto a las pestañas de vistas,
+   haz clic en **"+"** para crear una vista nueva.
+2. Agrega un filtro: propiedad `linea_negocio` es igual a `Domicilio`.
+   Guarda la vista con un nombre como "Domicilio".
+3. Repite creando otra vista con el filtro `linea_negocio` es igual a
+   `Clínicas`, guardada como "Clínicas".
+
+Desde ahí puedes cambiar entre una tabla y otra con las pestañas de vistas,
+sin que se mezclen los casos de ambos negocios.
 
 ## Fotos — qué son de verdad y qué falta reemplazar
 
