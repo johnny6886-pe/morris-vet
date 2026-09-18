@@ -63,7 +63,6 @@
   // README trae el detalle de cada una).
   var HUBSPOT_FIELD_MAP = {
     clinica: "company",
-    medico: "medico_responsable",
     whatsapp: "phone",
     correo: "email",
     distrito: "distrito",
@@ -86,12 +85,12 @@
     // la pantalla de Propiedades de HubSpot, columna "Nombre interno": "Nuevo").
     fields.push({ name: "hs_lead_status", value: "Nuevo" });
 
-    // El nombre de la clínica (además de guardarse en "company", vía
-    // HUBSPOT_FIELD_MAP) se manda también a la propiedad estándar
-    // "firstname": así la columna "Nombre" del contacto en HubSpot muestra
-    // el nombre de la clínica en vez de caer de respaldo al correo.
-    var clinicaNombre = (formData.get("clinica") || "").toString().trim();
-    if (clinicaNombre) fields.push({ name: "firstname", value: clinicaNombre });
+    // El nombre del médico responsable ya no se guarda en una propiedad
+    // personalizada aparte — se manda directo a la propiedad estándar
+    // "firstname", así la columna "Nombre" del contacto en HubSpot muestra
+    // el nombre del médico en vez de caer de respaldo al correo.
+    var medicoNombre = (formData.get("medico") || "").toString().trim();
+    if (medicoNombre) fields.push({ name: "firstname", value: medicoNombre });
 
     var endpoint =
       "https://api.hsforms.com/submissions/v3/integration/submit/" +
