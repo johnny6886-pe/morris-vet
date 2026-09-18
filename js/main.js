@@ -86,6 +86,13 @@
     // HubSpot: "Nuevo").
     fields.push({ name: "hs_lead_status", value: "Nuevo" });
 
+    // El nombre de la clínica (además de guardarse en "company", vía
+    // HUBSPOT_FIELD_MAP) se manda también a la propiedad estándar
+    // "firstname": así la columna "Nombre" del contacto en HubSpot muestra
+    // el nombre de la clínica en vez de caer de respaldo al correo.
+    var clinicaNombre = (formData.get("clinica") || "").toString().trim();
+    if (clinicaNombre) fields.push({ name: "firstname", value: clinicaNombre });
+
     var endpoint =
       "https://api.hsforms.com/submissions/v3/integration/submit/" +
       HUBSPOT_PORTAL_ID + "/" + HUBSPOT_FORM_GUID;
