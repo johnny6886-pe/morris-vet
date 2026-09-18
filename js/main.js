@@ -1,18 +1,23 @@
 /*!
- * Morris Vet — Atención Veterinaria a Domicilio (sitio B2C)
+ * Morris Vet — Atención Veterinaria para Clínicas
  * JavaScript de la landing. Sin dependencias externas.
  *
  * Contiene:
  *   1. Menú móvil (toggle del header)
- *   2. Formulario "Agendar visita": envío directo a HubSpot (Forms API) + estado
+ *   2. Formulario de contacto: envío directo a HubSpot (Forms API) + estado
  *   3. Animaciones al hacer scroll (reveal de secciones)
  *   4. Año dinámico en el footer
  *
  * NOTA SOBRE EL FORMULARIO:
- * Igual que en el sitio de clínicas (morrisvet.pe/clinicas), los datos se
- * envían directo a HubSpot con su API de formularios, sin backend propio.
- * Antes de publicar el sitio hay que crear el formulario en HubSpot y
- * completar HUBSPOT_FORM_GUID aquí abajo (instrucciones en el README).
+ * Los datos del caso (clínica, distrito, procedimiento, prioridad, resumen...)
+ * se envían directo a HubSpot con su API de formularios, sin backend propio.
+ * No hay campo de adjuntar archivos a propósito: la API de formularios de
+ * HubSpot no acepta archivos en un envío hecho por fuera de su formulario
+ * embebido (solo guarda una URL, no el binario), así que los exámenes,
+ * radiografías o fotos se piden por WhatsApp — ver la nota debajo del
+ * formulario en index.html. Antes de publicar el sitio hay que completar
+ * HUBSPOT_PORTAL_ID y HUBSPOT_FORM_GUID aquí abajo (instrucciones en el
+ * README).
  */
 (function () {
   "use strict";
@@ -38,32 +43,34 @@
   }
 
   /* ---------------------------------------------------------------------
-   * 2. Formulario "Agendar visita" → HubSpot
+   * 2. Formulario de contacto → HubSpot
    * ------------------------------------------------------------------- */
   var form = document.getElementById("case-form");
   var formSuccess = document.getElementById("form-success");
   var formReset = document.getElementById("form-reset");
   var formSubmitBtn = form ? form.querySelector(".form__submit") : null;
 
-  // Misma cuenta de HubSpot que el sitio de clínicas (portal 52008444), pero
-  // con un formulario NUEVO y propio para "Agendar visita a domicilio"
-  // (Marketing → Formularios). Reemplaza el GUID cuando lo crees.
+  // Cuenta de HubSpot de Morris Vet — formulario "Solicitar un cirujano"
+  // (Marketing → Formularios). Si alguna vez crean un formulario nuevo en
+  // HubSpot para reemplazar este, actualicen el GUID aquí.
   var HUBSPOT_PORTAL_ID = "52008444";
-  var HUBSPOT_FORM_GUID = "PENDIENTE_CREAR_FORMULARIO_B2C";
+  var HUBSPOT_FORM_GUID = "abf73978-6c88-464c-b444-395922e0b50f";
 
-  // Relación entre el name= de cada campo y la propiedad interna en HubSpot.
-  // "firstname" y "phone" son propiedades estándar de HubSpot. "distrito",
-  // "paciente" y "resumen_caso" ya existen porque se crearon para el
-  // formulario del sitio de clínicas — se reutilizan tal cual. La única
-  // propiedad nueva que hay que crear es "tipo_servicio_domicilio" (ver
-  // README).
+  // Relación entre el name= de cada campo del formulario y el nombre interno
+  // de la propiedad en HubSpot. "company", "phone" y "email" son propiedades
+  // estándar de HubSpot; el resto hay que crearlas como propiedades de
+  // contacto personalizadas con exactamente estos nombres internos (el
+  // README trae el detalle de cada una).
   var HUBSPOT_FIELD_MAP = {
-    nombre: "firstname",
+    clinica: "company",
+    medico: "medico_responsable",
     whatsapp: "phone",
-    mascota: "paciente",
+    correo: "email",
     distrito: "distrito",
-    servicio: "tipo_servicio_domicilio",
-    mensaje: "resumen_caso"
+    procedimiento: "tipo_procedimiento",
+    paciente: "paciente",
+    prioridad: "prioridad_caso",
+    resumen: "resumen_caso"
   };
 
   function submitToHubSpot(formData) {
@@ -73,6 +80,11 @@
         return value ? { name: HUBSPOT_FIELD_MAP[name], value: value } : null;
       })
       .filter(Boolean);
+
+    // Todo caso que llega por la web nace como "Nuevo" en Estado del lead,
+    // así no hay que marcarlo a mano cada vez (valor interno confirmado en
+    // HubSpot: "Nuevo").
+    fields.push({ name: "hs_lead_status", value: "Nuevo" });
 
     var endpoint =
       "https://api.hsforms.com/submissions/v3/integration/submit/" +
@@ -102,12 +114,12 @@
 
       submitToHubSpot(formData)
         .catch(function (err) {
-          // Si HubSpot no responde (o el GUID todavía no está configurado),
-          // igual dejamos pasar a la pantalla de confirmación: un problema
-          // de red o de configuración no debería bloquear la solicitud.
-          // Mientras tanto, WhatsApp y el teléfono siguen funcionando como
+          // Si HubSpot no responde (o los IDs todavía no están configurados),
+          // igual dejamos pasar al cliente a la pantalla de confirmación: un
+          // problema de red o de configuración no debería bloquear el caso.
+          // Mientras tanto, el WhatsApp y el teléfono siguen funcionando como
           // respaldo. Revisa la consola del navegador si ves este aviso.
-          console.warn("No se pudo enviar la solicitud a HubSpot:", err);
+          console.warn("No se pudo enviar el caso a HubSpot:", err);
         })
         .then(function () {
           form.hidden = true;
@@ -150,6 +162,7 @@
         revealObserver.observe(el);
       });
     } else {
+      // Sin soporte de IntersectionObserver: mostrar todo directo, sin animar.
       revealEls.forEach(function (el) {
         el.classList.add("is-visible");
       });
