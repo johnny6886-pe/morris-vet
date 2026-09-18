@@ -446,32 +446,6 @@ p{ margin: 0; }
 .team__item-title{ font-size: 20px; line-height: 1.1; margin: 0 0 6px; }
 .team__item-text{ font-size: 15.5px; line-height: 1.5; color: var(--color-ink); margin: 0; }
 
-/* ---- 5.8 Tarifario ---------------------------------------------------------- */
-.pricing__panel{
-  background: var(--mv-rosa);
-  border-radius: var(--radius-lg);
-  padding: clamp(28px, 3.6vw, 52px);
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-  gap: clamp(26px, 3.5vw, 48px);
-  align-items: center;
-}
-.pricing__title{ font-size: clamp(28px, 3.6vw, 46px); line-height: 1.02; letter-spacing: -.01em; margin: 12px 0 0; }
-.pricing__text{ font-size: 17px; line-height: 1.5; color: var(--color-ink); margin: 18px 0 0; max-width: 46ch; }
-.pricing__actions{ display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
-.pricing__whatsapp-note{ font-size: 15px; line-height: 1.45; color: var(--color-primary); font-weight: 500; margin: 14px 0 0; }
-.pricing__whatsapp-note a{ text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
-
-.pricing__includes{
-  list-style: none; margin: 0; padding: 26px 28px;
-  background: var(--mv-blanco); border-radius: var(--radius-md);
-  display: flex; flex-direction: column; gap: 0;
-}
-.pricing__includes-head{ font-family: var(--font-display); font-weight: 500; font-size: 17px; color: var(--color-primary); padding: 0 0 14px; }
-.pricing__includes li{ display: flex; gap: 12px; align-items: flex-start; padding: 14px 0; border-top: 2px solid var(--color-line-soft); }
-.pricing__includes li svg{ margin-top: 3px; stroke: var(--color-primary-alt); }
-.pricing__includes span{ font-size: 16px; line-height: 1.45; color: var(--color-ink); }
-
 /* ---- 5.9 FAQ ----------------------------------------------------------------- */
 .faq__title{ font-size: clamp(30px, 4.2vw, 52px); line-height: 1; letter-spacing: -.01em; margin: 12px 0 26px; }
 .faq__list{ max-width: 900px; border-top: 2px solid var(--color-line-soft); }

@@ -12,7 +12,6 @@ morris-vet-clinicas-site/
 ├── js/
 │   └── main.js             # Menú móvil, formulario, año dinámico
 ├── img/                    # Logos, foto e íconos (ver detalle abajo)
-├── assets/                 # Aquí va el tarifario-morrisvet.pdf (ver TODO)
 ├── reference/               # Código guardado para reinstalar más adelante (ver abajo)
 ├── favicon.ico
 ├── robots.txt
@@ -59,7 +58,7 @@ El formulario de contacto ya no valida nada más: al enviarlo, `js/main.js` mand
 2. **Crea las propiedades de contacto personalizadas** en HubSpot (Configuración → Propiedades → Propiedades de contacto → Crear propiedad), una por cada campo que no sea estándar, con exactamente estos nombres internos:
    - `medico_responsable` (texto de una línea)
    - `distrito` (texto de una línea, o desplegable con los 11 distritos de la web)
-   - `tipo_procedimiento` (texto de una línea, o desplegable con las mismas opciones del formulario)
+   - `tipo_procedimiento` (texto de una línea, o desplegable con las mismas opciones del formulario) — **importante:** el nombre interno de una propiedad en HubSpot solo se puede definir al momento de crearla (después queda fijo, aunque cambies el nombre visible). Verifica antes de guardar que quede exactamente como `tipo_procedimiento`; si ya tienes una versión con otro nombre interno, bórrala y créala de nuevo con este nombre exacto (mientras no tenga datos guardados, no hay ningún riesgo en hacerlo).
    - `paciente` (texto de una línea)
    - `prioridad_caso` (texto de una línea, o desplegable: Programada / Esta semana / Urgente (24 h))
    - `resumen_caso` (texto multilínea)
