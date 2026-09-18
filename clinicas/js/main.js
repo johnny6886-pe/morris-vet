@@ -82,12 +82,9 @@
       .filter(Boolean);
 
     // Todo caso que llega por la web nace como "Nuevo" en Estado del lead,
-    // así no hay que marcarlo a mano cada vez. OJO: "Estado del lead" es una
-    // propiedad de fábrica de HubSpot — se le puede cambiar el nombre visible
-    // ("Nuevo") pero el valor interno de la opción por defecto sigue siendo
-    // el original en inglés ("NEW"), así que es lo que hay que enviar aquí,
-    // no el texto que se ve en pantalla.
-    fields.push({ name: "hs_lead_status", value: "NEW" });
+    // así no hay que marcarlo a mano cada vez (valor interno confirmado en
+    // la pantalla de Propiedades de HubSpot, columna "Nombre interno": "Nuevo").
+    fields.push({ name: "hs_lead_status", value: "Nuevo" });
 
     // El nombre de la clínica (además de guardarse en "company", vía
     // HUBSPOT_FIELD_MAP) se manda también a la propiedad estándar
