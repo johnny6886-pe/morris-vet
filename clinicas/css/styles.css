@@ -209,32 +209,39 @@ p{ margin: 0; }
 
 .site-header__toggle{
   display: none;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
-  width: 44px; height: 44px;
-  border-radius: 12px;
-  border: 2px solid var(--color-line-soft);
-  background: transparent;
-  color: var(--color-primary);
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  flex: none;
 }
+.site-header__toggle span{
+  display: block;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-primary);
+  transition: transform .2s ease, opacity .2s ease;
+}
+body.nav-open .site-header__toggle span:nth-child(1){ transform: translateY(7px) rotate(45deg); }
+body.nav-open .site-header__toggle span:nth-child(2){ opacity: 0; }
+body.nav-open .site-header__toggle span:nth-child(3){ transform: translateY(-7px) rotate(-45deg); }
 
 @media (max-width: 860px){
+  .site-header__toggle{ display: flex; }
   .site-header__nav{
-    position: fixed;
-    inset: 78px 12px auto 12px;
-    background: var(--color-surface);
-    border: 2px solid var(--color-line);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-soft);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
     flex-direction: column;
     align-items: stretch;
-    padding: 10px;
-    gap: 2px;
-    transform: translateY(-10px);
-    opacity: 0;
-    pointer-events: none;
-    transition: transform .18s ease, opacity .18s ease;
+    background: var(--mv-blanco);
+    border-bottom: 2px solid var(--color-line);
+    padding: 10px var(--pad-inline) 18px;
+    display: none;
   }
+  body.nav-open .site-header__nav{ display: flex; }
   .site-header__link{ padding: 12px 14px; border-radius: 10px; }
   .site-header__link:hover{ background: rgba(19,101,64,.08); }
   .site-header__cta{ justify-content: center; margin-top: 4px; }
@@ -243,8 +250,6 @@ p{ margin: 0; }
      .site-header__cta:hover de la sección 5.1 y el botón queda con un fondo
      casi blanco — texto blanco sobre blanco, ilegible. */
   .site-header__cta:hover{ background: var(--color-primary); }
-  body.nav-open .site-header__nav{ transform: translateY(0); opacity: 1; pointer-events: auto; }
-  .site-header__toggle{ display: inline-flex; }
 }
 
 /* ---- 5.2 Hero ------------------------------------------------------------ */
