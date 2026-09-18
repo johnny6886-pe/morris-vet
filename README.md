@@ -55,14 +55,13 @@ HubSpot (Forms API), sin backend propio. Para activarlo:
    existen** porque las creaste para el formulario de clínicas:
    - `firstname` — estándar de HubSpot (nombre del dueño).
    - `phone` — estándar de HubSpot (WhatsApp).
-   - `email` — estándar de HubSpot. El formulario tiene un campo "Correo
-     (opcional)" — si la persona lo llena, se manda tal cual. Si lo deja
-     vacío, HubSpot igual necesita un correo para crear/identificar el
-     contacto (sin él, el envío entero se descarta en silencio), así que el
-     código arma automáticamente uno de respaldo con los dígitos del
-     WhatsApp (por ejemplo `51914962401@sincorreo.morrisvet.pe`). No hay que
-     crear ninguna propiedad nueva para esto (`email` ya existe), pero sí
-     hay que agregarla como campo oculto al formulario — ver el paso 4.
+   - `email` — estándar de HubSpot. El formulario tiene un campo "Correo"
+     **obligatorio**, así que HubSpot siempre recibe el dato real que
+     escribió la persona (HubSpot necesita un `email` sí o sí para
+     crear/identificar el contacto — sin él, el envío entero se descarta en
+     silencio). No hay que crear ninguna propiedad nueva para esto (`email`
+     ya existe), pero sí hay que agregarla como campo oculto al
+     formulario — ver el paso 4.
    - `distrito` — ya existe, se reutiliza tal cual.
    - `paciente` — ya existe, se reutiliza tal cual (aquí guarda "mascota,
      nombre y edad" en vez de datos del paciente quirúrgico, pero el campo

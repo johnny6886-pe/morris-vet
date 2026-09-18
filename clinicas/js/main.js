@@ -92,6 +92,11 @@
     var medicoNombre = (formData.get("medico") || "").toString().trim();
     if (medicoNombre) fields.push({ name: "firstname", value: medicoNombre });
 
+    // Para poder separar en HubSpot los contactos de clínicas de los de
+    // domicilio (mismo portal, un solo listado de Contactos), cada sitio
+    // marca de dónde viene el contacto en la propiedad "linea_negocio".
+    fields.push({ name: "linea_negocio", value: "Clínicas" });
+
     var endpoint =
       "https://api.hsforms.com/submissions/v3/integration/submit/" +
       HUBSPOT_PORTAL_ID + "/" + HUBSPOT_FORM_GUID;
